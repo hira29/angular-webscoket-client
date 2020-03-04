@@ -15,7 +15,7 @@ export class SocketService {
       this.ws = new WebSocket(this.uri);
       return new Observable(observer => {
           this.ws.onmessage = (e) => {
-            console.log(e.data);
+            // console.log(e.data);
             try {
               const object = JSON.parse(e.data);
               observer.next(object);

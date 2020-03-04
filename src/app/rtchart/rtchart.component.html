@@ -1,29 +1,37 @@
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-        <highcharts-chart
-                id="container"
-                [Highcharts]="HighCharts"
-                [constructorType]="chartConstructor"
-                [options]="chartOptions"
-                [(update)]="updateFlag"
-                [oneToOne]="true"
-                style="width: 100%; height: 300px; display: block;"
-        >
-        </highcharts-chart>
-        <div class="button-container" style="text-align: right; margin-top: -35px">
-            <button class="btn btn-primary btn-icon" (click)="onBtnClick()">
-                <i class="fas fa-play icon"></i>
-                Start
-            </button>
-        </div>
-        <br>
+        <div [chart]="chart" style="height: 330px"></div>
+        <div *ngIf="flags; then stopBtn; else startBtn"></div>
         <div class="card">
             <div class="card-body">
-                <div *ngFor="let value of chartData2">
-                    {{value.x}}, {{value.y}}
+                <div id="scroll-message" style="overflow-y: scroll; height: 200px">
+                    <table>
+                        <tr *ngFor="let value of chartData2">
+                            <td style="padding: 5px">{{value.x}}</td>
+                            <td style="padding: 5px">{{value.y}}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
+        <br>
     </div>
 </div>
 
+<ng-template #startBtn>
+    <div class="button-container">
+        <button class="btn btn-primary btn-icon" (click)="onBtnClick()">
+            <i class="fas fa-play icon"></i>
+            Start
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #stopBtn>
+    <div class="button-container">
+        <button class="btn btn-primary btn-icon" style="background: #d9534f" (click)="onBtnClick()">
+            <i class="fas fa-stop icon"></i>
+            Stop
+        </button>
+    </div>
+</ng-template>

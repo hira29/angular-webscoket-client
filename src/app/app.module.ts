@@ -12,6 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ChartComponent } from './chart/chart.component';
 
 import { HighchartsChartModule} from 'highcharts-angular';
+import { ChartModule } from 'angular-highcharts';
 import { RtChartComponent } from './rtchart/rtchart.component';
 
 @NgModule({
@@ -28,7 +29,8 @@ import { RtChartComponent } from './rtchart/rtchart.component';
     NgbModule,
     FormsModule,
     HttpClientModule,
-    HighchartsChartModule
+    HighchartsChartModule,
+    ChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]

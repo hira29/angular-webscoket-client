@@ -1,11 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {SocketService} from '../socket.service';
-import * as Highcharts from 'highcharts';
-
-interface dataModel {
-    date: string;
-    count: string;
-}
+import { Chart } from 'angular-highcharts';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-rtchart',
@@ -13,68 +9,65 @@ interface dataModel {
   styleUrls: ['./rtchart.component.css']
 })
 export class RtChartComponent implements OnInit {
-    public dataDate; dataCount; dataSet;
+    public dataDate; dataCount; dataSet; iterate = 0; flags = true;
     public chartData = []; chartData2 = [];
 
-    HighCharts: typeof Highcharts = Highcharts;
-    chartConstructor = 'chart';
-    updateFlag = false;
-    chartOptions: Highcharts.Options = {
+    chart = new Chart({
         chart: {
-            type: 'line',
-            zoomType: 'x'
-        },
-        title: {
-            text: null
+            type: 'spline',
         },
         time: {
             useUTC: false
         },
+        title: {
+            text: 'Linechart'
+        },
         xAxis: {
             type: 'datetime',
-            tickPixelInterval: 150,
-            labels: {
-              formatter() {
-                return Highcharts.dateFormat('%e %b %y', this.value);
-              }
-            },
-            title: {
-                text: 'Date'
-            }
+            tickPixelInterval: 150
         },
+
         yAxis: {
             title: {
-                text: 'Total Data'
-            }
-        },
-        tooltip: {
-            shared: true
-        },
-        plotOptions: {
-            line: {
-                marker: {
-                    enabled: true,
-                    radius: 4
-                }
-            }
-        },
-        responsive: {
-            rules: [{
-                condition: {
-                    maxWidth: 500
-                },
-                chartOptions: {
-                    plotOptions: {
-                        series: {
-                            marker: {
-                                radius: 2.5
-                            }
-                        }
-                    }
-                }
+                text: 'Value'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
             }]
-        }
-    };
+        },
+
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br/>',
+            pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        exporting: {
+            enabled: false
+        },
+        // @ts-ignore
+        series: [{
+            name: 'Random data',
+            data: (function () {
+                // generate an array of random data
+                var data = [],
+                    time = (new Date()).getTime(),
+                    i;
+                    data.push({
+                        x: time + i * 1000,
+                        y: Math.random() * 100
+                    });
+                return data;
+            }())
+        }]
+    });
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         public socks: SocketService
@@ -84,11 +77,22 @@ export class RtChartComponent implements OnInit {
     ngOnInit() {
         this.getData();
     }
-
+    onBtnClick() {
+        if (this.flags) {
+            this.subscriptions.forEach((subscription: Subscription) => {
+                subscription.unsubscribe();
+            });
+            this.flags = false;
+        } else {
+            this.ngOnInit();
+            this.flags = true;
+        }
+    }
     getData() {
-        const self = this;
+        this.subscriptions.push(this.conn.subscribe( x => {
+            const objDiv = document.getElementById('scroll-message');
+            objDiv.scrollTop = objDiv.scrollHeight;
 
-        this.conn.subscribe( x => {
             this.dataSet = x;
             this.dataDate = new Date(this.dataSet.date);
             this.dataCount = this.dataSet.count;
@@ -102,15 +106,20 @@ export class RtChartComponent implements OnInit {
                 x: this.dataDate.getTime(),
                 y: this.dataCount
             });
-
+            if (this.iterate > 20) {
+                this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
+            } else {
+                this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, false);
+                this.iterate = this.iterate + 1;
+            }
             // @ts-ignore
-            this.chartOptions.series = [{
-                marker: {
-                    symbol: 'square'
-                },
-                name: 'Count',
-                data: this.chartData
-            }];
+            // this.chartOptions.series = [{
+            //     marker: {
+            //         symbol: 'square'
+            //     },
+            //     name: 'Count',
+            //     data: this.chartData
+            // }];
 
             // this.chartOptions.series[0] = {
             //
@@ -134,7 +143,8 @@ export class RtChartComponent implements OnInit {
             // Highcharts.chart('chart-container', this.chartOptions);
 
             this.updateFlag = true;
-        });
+            return;
+        }));
     }
 
     requestData() {

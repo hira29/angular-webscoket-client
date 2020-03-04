@@ -14,3 +14,8 @@ button .icon {
     line-height: 2.3;
     color: white;
 }
+
+.button-container {
+    text-align: right;
+    margin: 20px 0;
+}
