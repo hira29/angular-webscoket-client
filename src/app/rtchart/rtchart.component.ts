@@ -10,14 +10,11 @@ import {Subscription} from 'rxjs';
 })
 export class RtChartComponent implements OnInit {
     public dataDate; dataCount; dataSet; iterate = 0; flags = true;
-    public chartData = []; chartData2 = [];
+    public chartData = [];
 
     chart = new Chart({
         chart: {
             type: 'spline',
-        },
-        time: {
-            useUTC: false
         },
         title: {
             text: 'Linechart'
@@ -26,7 +23,6 @@ export class RtChartComponent implements OnInit {
             type: 'datetime',
             tickPixelInterval: 150
         },
-
         yAxis: {
             title: {
                 text: 'Value'
@@ -37,19 +33,11 @@ export class RtChartComponent implements OnInit {
                 color: '#808080'
             }]
         },
-
         tooltip: {
             headerFormat: '<b>{series.name}</b><br/>',
             pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
         },
 
-        legend: {
-            enabled: false
-        },
-
-        exporting: {
-            enabled: false
-        },
         // @ts-ignore
         series: [{
             name: 'Random data',
@@ -77,6 +65,7 @@ export class RtChartComponent implements OnInit {
     ngOnInit() {
         this.getData();
     }
+
     onBtnClick() {
         if (this.flags) {
             this.subscriptions.forEach((subscription: Subscription) => {
@@ -88,6 +77,7 @@ export class RtChartComponent implements OnInit {
             this.flags = true;
         }
     }
+
     getData() {
         this.subscriptions.push(this.conn.subscribe( x => {
             const objDiv = document.getElementById('scroll-message');
@@ -97,58 +87,19 @@ export class RtChartComponent implements OnInit {
             this.dataDate = new Date(this.dataSet.date);
             this.dataCount = this.dataSet.count;
 
-            this.chartData2.push({
+            this.chartData.push({
                 x: this.dataDate.toLocaleDateString('id-ID'),
                 y: this.dataCount
             });
 
-            // this.chartData.push({
-            //     x: this.dataDate.getTime(),
-            //     y: this.dataCount
-            // });
             if (this.iterate > 20) {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
             } else {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, false);
                 this.iterate = this.iterate + 1;
             }
-            // @ts-ignore
-            // this.chartOptions.series = [{
-            //     marker: {
-            //         symbol: 'square'
-            //     },
-            //     name: 'Count',
-            //     data: this.chartData
-            // }];
 
-            // this.chartOptions.series[0] = {
-            //
-            //     data: (function() {
-            //         // generate an array of random data
-            //         const data = [];
-            //         const time = (new Date()).getTime();
-            //         let i;
-            //
-            //         for (i = -19; i <= 0; i += 1) {
-            //             data.push({
-            //                 x: self.dataDate,
-            //                 y: self.dataCount
-            //             });
-            //         }
-            //         return data;
-            //     })
-            // };
-
-            // @ts-ignore
-            // Highcharts.chart('chart-container', this.chartOptions);
-
-            this.updateFlag = true;
             return;
         }));
-    }
-
-    requestData() {
-        // const series = this.chartOptions.series[0];
-        // const shift = series.data.length > 20;
     }
 }
