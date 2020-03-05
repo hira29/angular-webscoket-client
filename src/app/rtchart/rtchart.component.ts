@@ -97,15 +97,15 @@ export class RtChartComponent implements OnInit {
             this.dataDate = new Date(this.dataSet.date);
             this.dataCount = this.dataSet.count;
 
-            this.chartData2.push({
-                x: this.dataDate.toLocaleDateString('id-ID'),
-                y: this.dataCount
-            });
+            // this.chartData2.push({
+            //     x: this.dataDate.toLocaleDateString('id-ID'),
+            //     y: this.dataCount
+            // });
 
-            this.chartData.push({
-                x: this.dataDate.getTime(),
-                y: this.dataCount
-            });
+            // this.chartData.push({
+            //     x: this.dataDate.getTime(),
+            //     y: this.dataCount
+            // });
             if (this.iterate > 20) {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
             } else {
