@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs';
 })
 export class RtChartComponent implements OnInit {
     public dataDate; dataCount; dataSet; iterate = 0; flags = true;
-    public chartData = []; chartData2 = [];
+    public chartData = [];
 
     chart = new Chart({
         chart: {
@@ -73,7 +73,7 @@ export class RtChartComponent implements OnInit {
         public socks: SocketService
     ) { }
 
-    conn = this.socks.SocketConnection();
+    // conn = this.socks.SocketConnection();
     ngOnInit() {
         this.getData();
     }
@@ -89,15 +89,16 @@ export class RtChartComponent implements OnInit {
         }
     }
     getData() {
-        this.socks.testcon$.subscribe(x => {
+        this.socks.socket.subscribe(x => {
             this.dataSet = x;
             this.dataDate = new Date(this.dataSet.date);
             this.dataCount = this.dataSet.count;
 
-            this.chartData2.push({
+            this.chartData.push({
                 x: this.dataDate.toLocaleDateString('id-ID'),
                 y: this.dataCount
             });
+
             if (this.iterate > 20) {
 
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
@@ -105,9 +106,7 @@ export class RtChartComponent implements OnInit {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, false);
                 this.iterate = this.iterate + 1;
             }
-
-            return;
-        }));
+        });
     }
 
     requestData() {
