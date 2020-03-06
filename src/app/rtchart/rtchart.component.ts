@@ -99,13 +99,15 @@ export class RtChartComponent implements OnInit {
                 y: this.dataCount
             });
             if (this.iterate > 20) {
+
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
             } else {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, false);
                 this.iterate = this.iterate + 1;
             }
-            // this.updateFlag = true;
-        });
+
+            return;
+        }));
     }
 
     requestData() {
