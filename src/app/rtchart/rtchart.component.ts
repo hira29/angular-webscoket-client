@@ -89,10 +89,7 @@ export class RtChartComponent implements OnInit {
         }
     }
     getData() {
-        this.subscriptions.push(this.conn.subscribe( x => {
-            const objDiv = document.getElementById('scroll-message');
-            objDiv.scrollTop = objDiv.scrollHeight;
-
+        this.socks.testcon$.subscribe(x => {
             this.dataSet = x;
             this.dataDate = new Date(this.dataSet.date);
             this.dataCount = this.dataSet.count;
@@ -101,50 +98,14 @@ export class RtChartComponent implements OnInit {
                 x: this.dataDate.toLocaleDateString('id-ID'),
                 y: this.dataCount
             });
-
-            // this.chartData.push({
-            //     x: this.dataDate.getTime(),
-            //     y: this.dataCount
-            // });
             if (this.iterate > 20) {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, true);
             } else {
                 this.chart.addPoint([this.dataDate.getTime(), this.dataCount], 0, true, false);
                 this.iterate = this.iterate + 1;
             }
-            // @ts-ignore
-            // this.chartOptions.series = [{
-            //     marker: {
-            //         symbol: 'square'
-            //     },
-            //     name: 'Count',
-            //     data: this.chartData
-            // }];
-
-            // this.chartOptions.series[0] = {
-            //
-            //     data: (function() {
-            //         // generate an array of random data
-            //         const data = [];
-            //         const time = (new Date()).getTime();
-            //         let i;
-            //
-            //         for (i = -19; i <= 0; i += 1) {
-            //             data.push({
-            //                 x: self.dataDate,
-            //                 y: self.dataCount
-            //             });
-            //         }
-            //         return data;
-            //     })
-            // };
-
-            // @ts-ignore
-            // Highcharts.chart('chart-container', this.chartOptions);
-
-            this.updateFlag = true;
-            return;
-        }));
+            // this.updateFlag = true;
+        });
     }
 
     requestData() {
